@@ -13,19 +13,6 @@ module PropSet = struct
     let compare = compare_prop
   end)
 
-  let remove_map (f : elt -> 'a option) (props : t) : 'a option * t =
-    let value_ref = ref None in
-    let g prop =
-      match !value_ref, f prop with
-      | Some _, _ -> Some prop
-      | None, (Some _ as value) ->
-          value_ref := value;
-          None
-      | None, None -> Some prop
-    in
-    let props = filter_map g props in
-    !value_ref, props
-
   let pp ppf props =
     let props = to_seq props in
     let sep ppf () = Format.fprintf ppf ",@ " in
