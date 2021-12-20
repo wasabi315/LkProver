@@ -1,0 +1,7 @@
+(library
+ (name lkprover)
+ (preprocess (pps ppx_deriving.show ppx_deriving.ord sedlex.ppx))
+ (libraries sedlex menhirLib))
+
+(menhir
+ (modules parser))

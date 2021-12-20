@@ -1,0 +1,1 @@
+val prove : Lk.sequent -> Lk.derivation option
