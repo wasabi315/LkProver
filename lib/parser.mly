@@ -3,7 +3,7 @@
 
 %start <Lk.sequent> sequent
 
-%left IMP
+%right IMP
 %left OR
 %left AND
 %right prec_uni
