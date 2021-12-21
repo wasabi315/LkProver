@@ -4,9 +4,8 @@ exception UnknownToken of string
 
 let space = [%sedlex.regexp? Plus white_space]
 let alpha = [%sedlex.regexp? 'A' .. 'Z' | 'a' .. 'z']
-let greek = [%sedlex.regexp? 0x391 .. 0x3a9 | 0x3b1 .. 0x3c9]
 let digit = [%sedlex.regexp? '0' .. '9']
-let sym = [%sedlex.regexp? (alpha | greek), Star (alpha | greek | digit | '_')]
+let sym = [%sedlex.regexp? alpha, Star (alpha | digit | '_')]
 
 let rec read lexbuf =
   match%sedlex lexbuf with
