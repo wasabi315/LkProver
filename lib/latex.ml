@@ -62,12 +62,12 @@ let rec pp_deriv_bussproof_commands ppf = function
       pp_deriv_bussproof_commands ppf deriv1;
       pp_deriv_bussproof_commands ppf deriv2;
       fprintf ppf "\\RightLabel{($\\land R$)}@,";
-      fprintf ppf "\\UnaryInfC{%a}@," pp_sequent seq
+      fprintf ppf "\\BinaryInfC{%a}@," pp_sequent seq
   | Lk.OrL (seq, deriv1, deriv2) ->
       pp_deriv_bussproof_commands ppf deriv1;
       pp_deriv_bussproof_commands ppf deriv2;
       fprintf ppf "\\RightLabel{($\\lor L$)}@,";
-      fprintf ppf "\\UnaryInfC{%a}@," pp_sequent seq
+      fprintf ppf "\\BinaryInfC{%a}@," pp_sequent seq
   | Lk.OrR (seq, deriv) ->
       pp_deriv_bussproof_commands ppf deriv;
       fprintf ppf "\\RightLabel{($\\lor R$)}@,";
@@ -76,7 +76,7 @@ let rec pp_deriv_bussproof_commands ppf = function
       pp_deriv_bussproof_commands ppf deriv1;
       pp_deriv_bussproof_commands ppf deriv2;
       fprintf ppf "\\RightLabel{($\\rightarrow L$)}@,";
-      fprintf ppf "\\UnaryInfC{%a}@," pp_sequent seq
+      fprintf ppf "\\BinaryInfC{%a}@," pp_sequent seq
   | Lk.ImpR (seq, deriv) ->
       pp_deriv_bussproof_commands ppf deriv;
       fprintf ppf "\\RightLabel{($\\rightarrow R$)}@,";
