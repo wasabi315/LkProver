@@ -1,5 +1,5 @@
 # LkProver
-An Automated LK deduction. Emits a latex snippet of `bussproof`'s `prooftree`.
+An automated LK deduction. The resulting proof is emitted as a Latex snippet that use [`bussproofs`](https://www.logicmatters.net/resources/pdfs/latex/BussGuide2.pdf).
 
 ## Example
 ```sh
@@ -23,9 +23,11 @@ echo '|- ((p -> q) -> p) -> p' | dune exec bin/main.exe
 ```
 ![](docs/latex.png)
 
-## Available connectives
+## Available Symbols
+- variables : `[A-Za-z][A-Za-z0-9_]*`
 - not : `¬`, `~`, `!`
 - and : `∧`, `^`
 - or : `∨`, `v`, `V`
 - implication : `→`, `->`
 - proves : `⇒`, `=>`, `⊢`, `|-`
+- parentheses : `(`, `)`
