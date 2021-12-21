@@ -1,5 +1,5 @@
 # LkProver
-Automated LK deduction
+An Automated LK deduction. Emits a latex snippet of `bussproof`'s `prooftree`.
 
 ## Example
 ```sh
@@ -21,3 +21,10 @@ echo '|- ((p -> q) -> p) -> p' | dune exec bin/main.exe
 \UnaryInfC{$\vdash ((p \rightarrow q) \rightarrow p) \rightarrow p$}
 \end{prooftree}
 ```
+
+## Available connectives
+- not : `¬`, `~`, `!`
+- and : `∧`, `^`
+- or : `∨`, `v`, `V`
+- implication : `→`, `->`
+- proves : `⇒`, `=>`, `⊢`, `|-`
