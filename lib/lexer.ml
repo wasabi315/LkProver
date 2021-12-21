@@ -21,11 +21,13 @@ let rec read lexbuf =
   | '^' -> AND
   | 0x2228 -> OR (* ∨ *)
   | '|' -> OR
+  | 'V' -> OR
   | 'v' -> OR
   | 0x2192 -> IMP (* → *)
   | "->" -> IMP
   | 0x21d2 -> PROVES (* ⇒ *)
   | 0x22a2 -> PROVES (* ⊢ *)
+  | "=>" -> PROVES
   | "|-" -> PROVES
   | sym ->
       let s = Sedlexing.Utf8.lexeme lexbuf in
