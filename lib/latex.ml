@@ -42,45 +42,34 @@ let pp_sequent ppf (Lk.Sequent (psl, psr)) =
   fprintf ppf "\\vdash %a$" pp_propset psr
 
 let rec pp_deriv_bussproof_commands ppf = function
-  | Lk.Axiom seq ->
-      fprintf ppf "\\AxiomC{}@,";
-      fprintf ppf "\\RightLabel{(axiom)}@,";
-      fprintf ppf "\\UnaryInfC{%a}@," pp_sequent seq
-  | Lk.NotL (seq, deriv) ->
-      pp_deriv_bussproof_commands ppf deriv;
-      fprintf ppf "\\RightLabel{($\\lnot L$)}@,";
-      fprintf ppf "\\UnaryInfC{%a}@," pp_sequent seq
-  | Lk.NotR (seq, deriv) ->
-      pp_deriv_bussproof_commands ppf deriv;
-      fprintf ppf "\\RightLabel{($\\lnot R$)}@,";
-      fprintf ppf "\\UnaryInfC{%a}@," pp_sequent seq
-  | Lk.AndL (seq, deriv) ->
-      pp_deriv_bussproof_commands ppf deriv;
-      fprintf ppf "\\RightLabel{($\\land L$)}@,";
-      fprintf ppf "\\UnaryInfC{%a}@," pp_sequent seq
+  | Lk.Axiom seq -> pp_axiom ppf seq
+  | Lk.NotL (seq, deriv) -> pp_unary_inf ppf "$\\lnot L$" seq deriv
+  | Lk.NotR (seq, deriv) -> pp_unary_inf ppf "$\\lnot R$" seq deriv
+  | Lk.AndL (seq, deriv) -> pp_unary_inf ppf "$\\land L$" seq deriv
   | Lk.AndR (seq, deriv1, deriv2) ->
-      pp_deriv_bussproof_commands ppf deriv1;
-      pp_deriv_bussproof_commands ppf deriv2;
-      fprintf ppf "\\RightLabel{($\\land R$)}@,";
-      fprintf ppf "\\BinaryInfC{%a}@," pp_sequent seq
+      pp_binary_inf ppf "$\\land R$" seq deriv1 deriv2
   | Lk.OrL (seq, deriv1, deriv2) ->
-      pp_deriv_bussproof_commands ppf deriv1;
-      pp_deriv_bussproof_commands ppf deriv2;
-      fprintf ppf "\\RightLabel{($\\lor L$)}@,";
-      fprintf ppf "\\BinaryInfC{%a}@," pp_sequent seq
-  | Lk.OrR (seq, deriv) ->
-      pp_deriv_bussproof_commands ppf deriv;
-      fprintf ppf "\\RightLabel{($\\lor R$)}@,";
-      fprintf ppf "\\UnaryInfC{%a}@," pp_sequent seq
+      pp_binary_inf ppf "$\\lor L$" seq deriv1 deriv2
+  | Lk.OrR (seq, deriv) -> pp_unary_inf ppf "$\\lor R$" seq deriv
   | Lk.ImpL (seq, deriv1, deriv2) ->
-      pp_deriv_bussproof_commands ppf deriv1;
-      pp_deriv_bussproof_commands ppf deriv2;
-      fprintf ppf "\\RightLabel{($\\rightarrow L$)}@,";
-      fprintf ppf "\\BinaryInfC{%a}@," pp_sequent seq
-  | Lk.ImpR (seq, deriv) ->
-      pp_deriv_bussproof_commands ppf deriv;
-      fprintf ppf "\\RightLabel{($\\rightarrow R$)}@,";
-      fprintf ppf "\\UnaryInfC{%a}@," pp_sequent seq
+      pp_binary_inf ppf "$\\rightarrow L$" seq deriv1 deriv2
+  | Lk.ImpR (seq, deriv) -> pp_unary_inf ppf "$\\rightarrow R$" seq deriv
+
+and pp_axiom ppf seq =
+  fprintf ppf "\\AxiomC{}@,";
+  fprintf ppf "\\RightLabel{(axiom)}@,";
+  fprintf ppf "\\UnaryInfC{%a}@," pp_sequent seq
+
+and pp_unary_inf ppf rule seq deriv =
+  pp_deriv_bussproof_commands ppf deriv;
+  fprintf ppf "\\RightLabel{(%s)}@," rule;
+  fprintf ppf "\\UnaryInfC{%a}@," pp_sequent seq
+
+and pp_binary_inf ppf rule seq deriv1 deriv2 =
+  pp_deriv_bussproof_commands ppf deriv1;
+  pp_deriv_bussproof_commands ppf deriv2;
+  fprintf ppf "\\RightLabel{(%s)}@," rule;
+  fprintf ppf "\\BinaryInfC{%a}@," pp_sequent seq
 
 let pp_deriv_bussproof ppf deriv =
   Format.fprintf ppf "@[<v>\\begin{prooftree}@,";
