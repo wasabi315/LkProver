@@ -21,6 +21,7 @@ echo '|- ((p -> q) -> p) -> p' | dune exec bin/main.exe
 \UnaryInfC{$\vdash ((p \rightarrow q) \rightarrow p) \rightarrow p$}
 \end{prooftree}
 ```
+![](docs/latex.png)
 
 ## Available connectives
 - not : `¬`, `~`, `!`
