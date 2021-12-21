@@ -1,5 +1,5 @@
 # LkProver
-An automated LK deduction. The resulting proof is emitted as a Latex snippet that use [`bussproofs`](https://www.logicmatters.net/resources/pdfs/latex/BussGuide2.pdf).
+An automated LK deduction. The resulting proof is emitted as a Latex snippet that uses [`bussproofs`](https://www.logicmatters.net/resources/pdfs/latex/BussGuide2.pdf).
 
 ## Example
 ```sh
