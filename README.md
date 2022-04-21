@@ -3,7 +3,7 @@ An automated LK deduction. The resulting proof is emitted as a Latex snippet tha
 
 ## Example
 ```sh
-echo '|- ((p -> q) -> p) -> p' | dune exec bin/main.exe
+dune exec bin/main.exe '|- ((p -> q) -> p) -> p'
 ```
 ```latex
 \begin{prooftree}
