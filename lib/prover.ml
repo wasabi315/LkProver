@@ -7,8 +7,8 @@ let ( let* ) o f =
 and return x = Some x
 
 (*
-  pop_matched f ({p} ∪ P) = Some x, P  (if f p = Some x)
-  pop_matched f P = None, P            (otherwise)
+  pop_matched f ({p} ∪ P) = Some (x, P)  (if f p = Some x)
+  pop_matched f P = None                 (otherwise)
 *)
 let pop_matched (f : Lk.prop -> 'a option) (props : Lk.PropSet.t) =
   let value_ref = ref None in
@@ -20,7 +20,7 @@ let pop_matched (f : Lk.prop -> 'a option) (props : Lk.PropSet.t) =
         None
   in
   let props = Lk.PropSet.filter_map g props in
-  !value_ref, props
+  Option.map (fun value -> value, props) !value_ref
 
 let pop_bottom =
   pop_matched (function
@@ -54,82 +54,65 @@ and axiom1 (Lk.Sequent (psl, psr) as seq) =
   if Lk.PropSet.disjoint psl psr then None else Some (Lk.Axiom seq)
 
 and axiom2 (Lk.Sequent (psl, _) as seq) =
-  match pop_bottom psl with
-  | None, _ -> None
-  | Some (), _ -> Some (Lk.Axiom seq)
+  let* _ = pop_bottom psl in
+  return (Lk.Axiom seq)
 
 and notl (Lk.Sequent (psl, psr) as seq) =
-  match pop_not psl with
-  | None, _ -> None
-  | Some p, psl ->
-      let seq' = Lk.Sequent (psl, Lk.PropSet.add p psr) in
-      let* deriv = prove seq' in
-      return (Lk.NotL (seq, deriv))
+  let* p, psl = pop_not psl in
+  let seq' = Lk.Sequent (psl, Lk.PropSet.add p psr) in
+  let* deriv = prove seq' in
+  return (Lk.NotL (seq, deriv))
 
 and notr (Lk.Sequent (psl, psr) as seq) =
-  match pop_not psr with
-  | None, _ -> None
-  | Some p, psr ->
-      let seq' = Lk.Sequent (Lk.PropSet.add p psl, psr) in
-      let* deriv = prove seq' in
-      return (Lk.NotR (seq, deriv))
+  let* p, psr = pop_not psr in
+  let seq' = Lk.Sequent (Lk.PropSet.add p psl, psr) in
+  let* deriv = prove seq' in
+  return (Lk.NotR (seq, deriv))
 
 and andl (Lk.Sequent (psl, psr) as seq) =
-  match pop_and psl with
-  | None, _ -> None
-  | Some (p1, p2), psl ->
-      let psl = Lk.PropSet.add p1 psl in
-      let psl = Lk.PropSet.add p2 psl in
-      let seq' = Lk.Sequent (psl, psr) in
-      let* deriv = prove seq' in
-      return (Lk.AndL (seq, deriv))
+  let* (p1, p2), psl = pop_and psl in
+  let psl = Lk.PropSet.add p1 psl in
+  let psl = Lk.PropSet.add p2 psl in
+  let seq' = Lk.Sequent (psl, psr) in
+  let* deriv = prove seq' in
+  return (Lk.AndL (seq, deriv))
 
 and andr (Lk.Sequent (psl, psr) as seq) =
-  match pop_and psr with
-  | None, _ -> None
-  | Some (p1, p2), psr ->
-      let seq1 = Lk.Sequent (psl, Lk.PropSet.add p1 psr) in
-      let* deriv1 = prove seq1 in
-      let seq2 = Lk.Sequent (psl, Lk.PropSet.add p2 psr) in
-      let* deriv2 = prove seq2 in
-      return (Lk.AndR (seq, deriv1, deriv2))
+  let* (p1, p2), psr = pop_and psr in
+  let seq1 = Lk.Sequent (psl, Lk.PropSet.add p1 psr) in
+  let* deriv1 = prove seq1 in
+  let seq2 = Lk.Sequent (psl, Lk.PropSet.add p2 psr) in
+  let* deriv2 = prove seq2 in
+  return (Lk.AndR (seq, deriv1, deriv2))
 
 and orl (Lk.Sequent (psl, psr) as seq) =
-  match pop_or psl with
-  | None, _ -> None
-  | Some (p1, p2), psl ->
-      let seq1 = Lk.Sequent (Lk.PropSet.add p1 psl, psr) in
-      let* deriv1 = prove seq1 in
-      let seq2 = Lk.Sequent (Lk.PropSet.add p2 psl, psr) in
-      let* deriv2 = prove seq2 in
-      return (Lk.OrL (seq, deriv1, deriv2))
+  let* (p1, p2), psl = pop_or psl in
+  let seq1 = Lk.Sequent (Lk.PropSet.add p1 psl, psr) in
+  let* deriv1 = prove seq1 in
+  let seq2 = Lk.Sequent (Lk.PropSet.add p2 psl, psr) in
+  let* deriv2 = prove seq2 in
+  return (Lk.OrL (seq, deriv1, deriv2))
 
 and orr (Lk.Sequent (psl, psr) as seq) =
-  match pop_or psr with
-  | None, _ -> None
-  | Some (p1, p2), psr ->
-      let psr = Lk.PropSet.add p1 psr in
-      let psr = Lk.PropSet.add p2 psr in
-      let seq' = Lk.Sequent (psl, psr) in
-      let* deriv = prove seq' in
-      return (Lk.OrR (seq, deriv))
+  let* (p1, p2), psr = pop_or psr in
+  let psr = Lk.PropSet.add p1 psr in
+  let psr = Lk.PropSet.add p2 psr in
+  let seq' = Lk.Sequent (psl, psr) in
+  let* deriv = prove seq' in
+  return (Lk.OrR (seq, deriv))
 
 and impl (Lk.Sequent (psl, psr) as seq) =
-  match pop_imp psl with
-  | None, _ -> None
-  | Some (p1, p2), psl ->
-      let seq1 = Lk.Sequent (psl, Lk.PropSet.add p1 psr) in
-      let* deriv1 = prove seq1 in
-      let seq2 = Lk.Sequent (Lk.PropSet.add p2 psl, psr) in
-      let* deriv2 = prove seq2 in
-      return (Lk.ImpL (seq, deriv1, deriv2))
+  let* (p1, p2), psl = pop_imp psl in
+  let seq1 = Lk.Sequent (psl, Lk.PropSet.add p1 psr) in
+  let* deriv1 = prove seq1 in
+  let seq2 = Lk.Sequent (Lk.PropSet.add p2 psl, psr) in
+  let* deriv2 = prove seq2 in
+  return (Lk.ImpL (seq, deriv1, deriv2))
 
 and impr (Lk.Sequent (psl, psr) as seq) =
-  match pop_imp psr with
-  | None, _ -> None
-  | Some (p1, p2), psr ->
-      let psl = Lk.PropSet.add p1 psl in
-      let psr = Lk.PropSet.add p2 psr in
-      let seq' = Lk.Sequent (psl, psr) in
-      let* deriv = prove seq' in
-      return (Lk.ImpR (seq, deriv))
+  let* (p1, p2), psr = pop_imp psr in
+  let psl = Lk.PropSet.add p1 psl in
+  let psr = Lk.PropSet.add p2 psr in
+  let seq' = Lk.Sequent (psl, psr) in
+  let* deriv = prove seq' in
+  return (Lk.ImpR (seq, deriv))
