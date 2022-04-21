@@ -22,6 +22,11 @@ let pop_matched (f : Lk.prop -> 'a option) (props : Lk.PropSet.t) =
   let props = Lk.PropSet.filter_map g props in
   !value_ref, props
 
+let pop_bottom =
+  pop_matched (function
+      | Lk.Bottom -> Some ()
+      | _ -> None)
+
 let pop_not =
   pop_matched (function
       | Lk.Not p -> Some p
@@ -43,10 +48,15 @@ let pop_imp =
       | _ -> None)
 
 let rec prove seq = List.find_map (fun rule -> rule seq) rules
-and rules = [ axiom; notl; notr; andl; orr; impr; andr; orl; impl ]
+and rules = [ axiom1; axiom2; notl; notr; andl; orr; impr; andr; orl; impl ]
 
-and axiom (Lk.Sequent (psl, psr) as seq) =
+and axiom1 (Lk.Sequent (psl, psr) as seq) =
   if Lk.PropSet.disjoint psl psr then None else Some (Lk.Axiom seq)
+
+and axiom2 (Lk.Sequent (psl, _) as seq) =
+  match pop_bottom psl with
+  | None, _ -> None
+  | Some (), _ -> Some (Lk.Axiom seq)
 
 and notl (Lk.Sequent (psl, psr) as seq) =
   match pop_not psl with

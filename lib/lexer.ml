@@ -13,6 +13,8 @@ let rec read lexbuf =
   | ',' -> COMMA
   | '(' -> LPAREN
   | ')' -> RPAREN
+  | 0x22a5 -> BOTTOM (* ⊥ *)
+  | "_|_" -> BOTTOM
   | 0xac -> NOT (* ¬ *)
   | '~' -> NOT
   | '!' -> NOT

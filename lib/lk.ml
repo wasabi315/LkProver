@@ -1,4 +1,5 @@
 type prop =
+  | Bottom
   | Sym of string
   | Not of prop
   | And of prop * prop

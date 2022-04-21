@@ -25,6 +25,7 @@ echo '|- ((p -> q) -> p) -> p' | dune exec bin/main.exe
 
 ## Available Symbols
 - variables : `[A-Za-z][A-Za-z0-9_]*`
+- bottom: `⊥`, `_|_`
 - not : `¬`, `~`, `!`
 - and : `∧`, `/\`, `^`, `&`
 - or : `∨`, `\/`, `|`

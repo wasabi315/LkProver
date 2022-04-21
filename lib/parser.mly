@@ -1,5 +1,5 @@
 %token <string> SYM
-%token NOT AND OR IMP LPAREN RPAREN PROVES COMMA EOF
+%token BOTTOM NOT AND OR IMP LPAREN RPAREN PROVES COMMA EOF
 
 %start <Lk.sequent> sequent
 
@@ -20,6 +20,7 @@ propset:
   | ps = separated_list(COMMA, prop) { Lk.PropSet.of_list ps }
 
 prop:
+  | BOTTOM { Lk.Bottom }
   | sym = SYM { Lk.Sym sym }
   | NOT p = prop %prec prec_uni { Lk.Not p }
   | p1 = prop AND p2 = prop { Lk.And (p1, p2) }

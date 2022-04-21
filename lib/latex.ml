@@ -11,6 +11,7 @@ type prec =
 
 let pp_prop =
   let rec loop prec ppf = function
+    | Lk.Bottom -> fprintf ppf "\\bot"
     | Lk.Sym s -> fprintf ppf "%s" s
     | Lk.Not p -> fprintf ppf "\\lnot %a" (loop PNot) p
     | Lk.And (p1, p2) ->
