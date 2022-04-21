@@ -17,12 +17,12 @@ let rec read lexbuf =
   | '~' -> NOT
   | '!' -> NOT
   | 0x2227 -> AND (* ∧ *)
+  | "/\\" -> AND
   | '&' -> AND
   | '^' -> AND
   | 0x2228 -> OR (* ∨ *)
+  | "\\/" -> OR
   | '|' -> OR
-  | 'V' -> OR
-  | 'v' -> OR
   | 0x2192 -> IMP (* → *)
   | "->" -> IMP
   | 0x21d2 -> PROVES (* ⇒ *)
