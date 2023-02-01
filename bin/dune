@@ -1,3 +1,11 @@
 (executable
  (name main)
+ (modules main)
  (libraries lkprover))
+
+(executable
+ (name lkprover_js)
+ (modules lkprover_js)
+ (libraries lkprover js_of_ocaml)
+ (modes js)
+ (preprocess (pps js_of_ocaml-ppx)))
