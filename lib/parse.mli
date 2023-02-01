@@ -1,2 +1,4 @@
-val from_channel : in_channel -> Lk.sequent
-val from_string : string -> Lk.sequent
+open Lk
+
+val from_channel : in_channel -> Sequent.t
+val from_string : string -> Sequent.t
