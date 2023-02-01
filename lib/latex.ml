@@ -1,47 +1,51 @@
 open Format
 open Lk
 
-type prec =
-  | PBottom
-  | PImp
-  | PImpR (* → is right associative *)
-  | POr
-  | PAnd
-  | PNot
-[@@deriving ord]
+module Op_prec = struct
+  type t =
+    | Bottom (* lowest precedence *)
+    | Imp
+    (* (p -> q) -> r
+       ^^^^^^^^ Imp_r is for surrounding here (-> is not associative) *)
+    | Imp_r
+    | Or
+    | And
+    | Not (* highest precedence *)
+  [@@deriving ord]
+end
 
 let pp_prop =
+  let pp_with_paren ppf prec1 prec2 pp =
+    let show_paren = Op_prec.compare prec1 prec2 > 0 in
+    if show_paren then fprintf ppf "(";
+    fprintf ppf "%t" pp;
+    if show_paren then fprintf ppf ")"
+  in
   let rec loop prec ppf = function
     | Prop.Bottom -> fprintf ppf "\\bot"
     | Sym s -> fprintf ppf "%s" s
-    | Not p -> fprintf ppf "\\lnot %a" (loop PNot) p
+    | Not p -> fprintf ppf "\\lnot %a" (loop Op_prec.Not) p
     | And (p1, p2) ->
-      let show_paren = compare_prec prec PAnd > 0 in
-      if show_paren then fprintf ppf "(";
-      fprintf ppf "%a \\land %a" (loop PAnd) p1 (loop PAnd) p2;
-      if show_paren then fprintf ppf ")"
+      dprintf "%a \\land %a" (loop And) p1 (loop And) p2
+      |> pp_with_paren ppf prec And
     | Or (p1, p2) ->
-      let show_paren = compare_prec prec POr > 0 in
-      if show_paren then fprintf ppf "(";
-      fprintf ppf "%a \\lor %a" (loop POr) p1 (loop POr) p2;
-      if show_paren then fprintf ppf ")"
+      dprintf "%a \\lor %a" (loop Or) p1 (loop Or) p2
+      |> pp_with_paren ppf prec Or
     | Imp (p1, p2) ->
-      let show_paren = compare_prec prec PImp > 0 in
-      if show_paren then fprintf ppf "(";
-      fprintf ppf "%a \\rightarrow %a" (loop PImpR) p1 (loop PImp) p2;
-      if show_paren then fprintf ppf ")"
+      dprintf "%a \\rightarrow %a" (loop Imp_r) p1 (loop Imp) p2
+      |> pp_with_paren ppf prec Imp
   in
-  loop PBottom
+  loop Bottom
 
-let pp_Prop_set ppf props =
+let pp_prop_set ppf props =
   let props = Prop_set.to_seq props in
   let sep ppf () = fprintf ppf ", " in
   pp_print_seq pp_prop ~pp_sep:sep ppf props
 
 let pp_sequent ppf (psl, psr) =
   fprintf ppf "$";
-  if not (Prop_set.is_empty psl) then fprintf ppf "%a " pp_Prop_set psl;
-  fprintf ppf "\\vdash %a$" pp_Prop_set psr
+  if not (Prop_set.is_empty psl) then fprintf ppf "%a " pp_prop_set psl;
+  fprintf ppf "\\vdash %a$" pp_prop_set psr
 
 let rec pp_deriv_bussproof_commands ppf = function
   | Derivation.Axiom seq -> pp_axiom ppf seq
@@ -74,6 +78,6 @@ and pp_binary_inf ppf rule seq deriv1 deriv2 =
   fprintf ppf "\\BinaryInfC{%a}@," pp_sequent seq
 
 let pp_deriv_bussproof ppf deriv =
-  Format.fprintf ppf "@[<v>\\begin{prooftree}@,";
+  fprintf ppf "@[<v>\\begin{prooftree}@,";
   pp_deriv_bussproof_commands ppf deriv;
-  Format.fprintf ppf "\\end{prooftree}@]@."
+  fprintf ppf "\\end{prooftree}@]@."
