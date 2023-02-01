@@ -12,5 +12,6 @@ let main =
   match deriv with
   | Some deriv -> Format.printf "%a" Latex.pp_deriv_bussproof deriv
   | None ->
-      Format.eprintf "Not provable in LK";
-      exit 1
+    Format.eprintf "Not provable in LK";
+    exit 1
+;;

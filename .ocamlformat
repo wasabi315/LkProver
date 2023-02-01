@@ -1,6 +1,2 @@
 profile = janestreet
 margin = 80
-cases-exp-indent = 4
-break-separators = after
-let-binding-spacing = compact
-sequence-blank-line = preserve-one

@@ -32,9 +32,10 @@ let rec read lexbuf =
   | "=>" -> PROVES
   | "|-" -> PROVES
   | sym ->
-      let s = Sedlexing.Utf8.lexeme lexbuf in
-      SYM s
+    let s = Sedlexing.Utf8.lexeme lexbuf in
+    SYM s
   | eof -> EOF
   | _ ->
-      let s = Sedlexing.Utf8.lexeme lexbuf in
-      raise (UnknownToken s)
+    let s = Sedlexing.Utf8.lexeme lexbuf in
+    raise (UnknownToken s)
+;;

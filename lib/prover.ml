@@ -22,31 +22,37 @@ let pop_matched matcher props =
   in
   let props = Prop_set.filter_map choose_first_match props in
   Option.map (fun value -> value, props) !matched
+;;
 
 let pop_bottom =
   pop_matched (function
     | Bottom -> Some ()
     | _ -> None)
+;;
 
 let pop_not =
   pop_matched (function
     | Not p -> Some p
     | _ -> None)
+;;
 
 let pop_and =
   pop_matched (function
     | And (p1, p2) -> Some (p1, p2)
     | _ -> None)
+;;
 
 let pop_or =
   pop_matched (function
     | Or (p1, p2) -> Some (p1, p2)
     | _ -> None)
+;;
 
 let pop_imp =
   pop_matched (function
     | Imp (p1, p2) -> Some (p1, p2)
     | _ -> None)
+;;
 
 let rec prove seq = List.find_map (( |> ) seq) rules
 
@@ -113,3 +119,4 @@ and imp_r ((lhs, rhs) as seq) =
   let seq' = Prop_set.(add p1 lhs, add p2 rhs) in
   let* deriv = prove seq' in
   return (Derivation.Imp_r (seq, deriv))
+;;

@@ -16,6 +16,7 @@ module Prop_set = struct
     let props = to_seq props in
     let sep ppf () = Format.fprintf ppf ",@ " in
     Format.fprintf ppf "{%a}" (Format.pp_print_seq Prop.pp ~pp_sep:sep) props
+  ;;
 
   let show props = Format.asprintf "%a" pp props
 end

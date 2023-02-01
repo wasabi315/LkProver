@@ -36,16 +36,19 @@ let pp_prop =
       |> pp_with_paren ppf prec Imp
   in
   loop Bottom
+;;
 
 let pp_prop_set ppf props =
   let props = Prop_set.to_seq props in
   let sep ppf () = fprintf ppf ", " in
   pp_print_seq pp_prop ~pp_sep:sep ppf props
+;;
 
 let pp_sequent ppf (psl, psr) =
   fprintf ppf "$";
   if not (Prop_set.is_empty psl) then fprintf ppf "%a " pp_prop_set psl;
   fprintf ppf "\\vdash %a$" pp_prop_set psr
+;;
 
 let rec pp_deriv_bussproof_commands ppf = function
   | Derivation.Axiom seq -> pp_axiom ppf seq
@@ -76,8 +79,10 @@ and pp_binary_inf ppf rule seq deriv1 deriv2 =
   pp_deriv_bussproof_commands ppf deriv2;
   fprintf ppf "\\RightLabel{(%s)}@," rule;
   fprintf ppf "\\BinaryInfC{%a}@," pp_sequent seq
+;;
 
 let pp_deriv_bussproof ppf deriv =
   fprintf ppf "@[<v>\\begin{prooftree}@,";
   pp_deriv_bussproof_commands ppf deriv;
   fprintf ppf "\\end{prooftree}@]@."
+;;
