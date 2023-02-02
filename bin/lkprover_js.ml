@@ -1,3 +1,4 @@
+open Format
 open Js_of_ocaml
 module Lk = Lkprover
 
@@ -33,7 +34,7 @@ let () =
           let* deriv =
             Lk.Prover.prove seq |> Option.to_result ~none:"Not provable in LK"
           in
-          let latex = Format.asprintf "%a" Lk.Latex.pp_deriv_bussproof deriv in
+          let latex = asprintf "%a" Lk.Latex.pp_deriv_bussproof deriv in
           return (Js.string latex |> Js.Optdef.return))
          |> Result.fold ~ok ~error
     end)

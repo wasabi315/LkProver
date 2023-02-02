@@ -1,3 +1,5 @@
+open Format
+
 module Prop = struct
   type t =
     | Bottom
@@ -14,11 +16,11 @@ module Prop_set = struct
 
   let pp ppf props =
     let props = to_seq props in
-    let sep ppf () = Format.fprintf ppf ",@ " in
-    Format.fprintf ppf "{%a}" (Format.pp_print_seq Prop.pp ~pp_sep:sep) props
+    let sep ppf () = fprintf ppf ",@ " in
+    fprintf ppf "{%a}" (pp_print_seq Prop.pp ~pp_sep:sep) props
   ;;
 
-  let show props = Format.asprintf "%a" pp props
+  let show props = asprintf "%a" pp props
 end
 
 module Sequent = struct

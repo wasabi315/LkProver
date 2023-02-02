@@ -1,5 +1,5 @@
 open Format
-open Lkprover
+module Lk = Lkprover
 
 let die =
   let k ppf =
@@ -15,8 +15,10 @@ let main =
     then Sys.argv.(1)
     else die "Usage: %s SEQUENT" Sys.argv.(0)
   in
-  let seq = Parse.from_string arg |> Result.fold ~ok:Fun.id ~error:(die "%s") in
-  match Prover.prove seq with
-  | Some deriv -> printf "%a" Latex.pp_deriv_bussproof deriv
+  let seq =
+    Lk.Parse.from_string arg |> Result.fold ~ok:Fun.id ~error:(die "%s")
+  in
+  match Lk.Prover.prove seq with
+  | Some deriv -> printf "%a" Lk.Latex.pp_deriv_bussproof deriv
   | None -> die "Not provable in LK"
 ;;
