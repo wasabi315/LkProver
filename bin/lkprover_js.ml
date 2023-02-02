@@ -11,21 +11,22 @@ let ( let* ) r f =
 
 let return x = Ok x
 
-let () =
-  let ok value =
+let obj_of_result = function
+  | Ok value ->
     object%js
       val ok = Js._true
-      val value = value
+      val value = Js.Optdef.return value
       val error = Js.Optdef.empty
     end
-  in
-  let error msg =
+  | Error msg ->
     object%js
       val ok = Js._false
       val value = Js.Optdef.empty
       val error = Js.string msg |> Js.Optdef.return
     end
-  in
+;;
+
+let () =
   Js.export_all
     (object%js
        method prove str =
@@ -35,7 +36,7 @@ let () =
             Lk.Prover.prove seq |> Option.to_result ~none:"Not provable in LK"
           in
           let latex = asprintf "%a" Lk.Latex.pp_deriv_bussproof deriv in
-          return (Js.string latex |> Js.Optdef.return))
-         |> Result.fold ~ok ~error
+          return @@ Js.string latex)
+         |> obj_of_result
     end)
 ;;

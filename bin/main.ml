@@ -9,7 +9,7 @@ let die =
   fun fmt -> kfprintf k err_formatter fmt
 ;;
 
-let main =
+let () =
   let arg =
     if Array.length Sys.argv = 2
     then Sys.argv.(1)
