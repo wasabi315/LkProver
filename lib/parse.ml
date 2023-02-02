@@ -5,9 +5,17 @@ module I = Parser.MenhirInterpreter
 let parse lexbuf =
   let supplier = Sedlexing.with_tokenizer Lexer.read lexbuf in
   let success = Result.ok in
-  let fail _ =
-    let offset = Sedlexing.lexeme_start lexbuf in
-    Error (sprintf "Syntax error at offset %d" offset)
+  let fail = function
+    | I.HandlingError env ->
+      let state =
+        match I.top env with
+        | Some (Element (s, _, _, _)) -> I.number s
+        | None -> 0
+      in
+      let msg = Parser_messages.message state in
+      let offset = Sedlexing.lexeme_start lexbuf in
+      Error (sprintf "Syntax error at offset %d: %s" offset msg)
+    | _ -> assert false
   in
   let init =
     Parser.Incremental.sequent (fst @@ Sedlexing.lexing_positions lexbuf)

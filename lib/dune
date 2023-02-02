@@ -6,3 +6,12 @@
 (menhir
  (flags --table)
  (modules parser))
+
+(rule
+  (action (with-stdout-to parser_messages.ml
+    (run menhir
+      %{dep:parser.mly}
+      --compile-errors %{dep:parser_messages.messages}
+    )
+  ))
+)

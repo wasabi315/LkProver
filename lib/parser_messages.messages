@@ -1,0 +1,197 @@
+sequent: RPAREN
+##
+## Ends in an error in state: 0.
+##
+## sequent' -> . sequent [ # ]
+##
+## The known suffix of the stack is as follows:
+##
+##
+
+At the beginning, a sequent is expected
+
+sequent: NOT RPAREN
+##
+## Ends in an error in state: 2.
+##
+## prop -> NOT . prop [ RPAREN PROVES OR IMP EOF COMMA AND ]
+##
+## The known suffix of the stack is as follows:
+## NOT
+##
+
+After an operator, a proposition is expected
+
+sequent: LPAREN RPAREN
+##
+## Ends in an error in state: 3.
+##
+## paren(prop) -> LPAREN . prop RPAREN [ RPAREN PROVES OR IMP EOF COMMA AND ]
+##
+## The known suffix of the stack is as follows:
+## LPAREN
+##
+
+After an opening parenthesis, a proposition is expected
+
+sequent: LPAREN BOTTOM PROVES
+##
+## Ends in an error in state: 5.
+##
+## paren(prop) -> LPAREN prop . RPAREN [ RPAREN PROVES OR IMP EOF COMMA AND ]
+## prop -> prop . AND prop [ RPAREN OR IMP AND ]
+## prop -> prop . OR prop [ RPAREN OR IMP AND ]
+## prop -> prop . IMP prop [ RPAREN OR IMP AND ]
+##
+## The known suffix of the stack is as follows:
+## LPAREN prop
+##
+
+Missing an closing parenthesis
+
+sequent: BOTTOM OR RPAREN
+##
+## Ends in an error in state: 7.
+##
+## prop -> prop OR . prop [ RPAREN PROVES OR IMP EOF COMMA AND ]
+##
+## The known suffix of the stack is as follows:
+## prop OR
+##
+
+After an operator, a proposition is expected
+
+sequent: BOTTOM OR BOTTOM SYM
+##
+## Ends in an error in state: 8.
+##
+## prop -> prop . AND prop [ RPAREN PROVES OR IMP EOF COMMA AND ]
+## prop -> prop . OR prop [ RPAREN PROVES OR IMP EOF COMMA AND ]
+## prop -> prop OR prop . [ RPAREN PROVES OR IMP EOF COMMA AND ]
+## prop -> prop . IMP prop [ RPAREN PROVES OR IMP EOF COMMA AND ]
+##
+## The known suffix of the stack is as follows:
+## prop OR prop
+##
+
+Between two propositions, an operator or COMMA are expected
+
+sequent: BOTTOM AND RPAREN
+##
+## Ends in an error in state: 9.
+##
+## prop -> prop AND . prop [ RPAREN PROVES OR IMP EOF COMMA AND ]
+##
+## The known suffix of the stack is as follows:
+## prop AND
+##
+
+After an operator, a proposition is expected
+
+sequent: BOTTOM IMP RPAREN
+##
+## Ends in an error in state: 12.
+##
+## prop -> prop IMP . prop [ RPAREN PROVES OR IMP EOF COMMA AND ]
+##
+## The known suffix of the stack is as follows:
+## prop IMP
+##
+
+After an operator, a proposition is expected
+
+sequent: BOTTOM IMP BOTTOM SYM
+##
+## Ends in an error in state: 13.
+##
+## prop -> prop . AND prop [ RPAREN PROVES OR IMP EOF COMMA AND ]
+## prop -> prop . OR prop [ RPAREN PROVES OR IMP EOF COMMA AND ]
+## prop -> prop . IMP prop [ RPAREN PROVES OR IMP EOF COMMA AND ]
+## prop -> prop IMP prop . [ RPAREN PROVES OR IMP EOF COMMA AND ]
+##
+## The known suffix of the stack is as follows:
+## prop IMP prop
+##
+
+Between two propositions, an operator or COMMA are expected
+
+sequent: BOTTOM EOF
+##
+## Ends in an error in state: 17.
+##
+## sequent -> prop_set . PROVES prop_set EOF [ # ]
+##
+## The known suffix of the stack is as follows:
+## prop_set
+##
+## WARNING: This example involves spurious reductions.
+## This implies that, although the LR(1) items shown above provide an
+## accurate view of the past (what has been recognized so far), they
+## may provide an INCOMPLETE view of the future (what was expected next).
+## In state 21, spurious reduction of production separated_nonempty_list(COMMA,prop) -> prop
+## In state 16, spurious reduction of production loption(separated_nonempty_list(COMMA,prop)) -> separated_nonempty_list(COMMA,prop)
+## In state 24, spurious reduction of production prop_set -> loption(separated_nonempty_list(COMMA,prop))
+##
+
+Missing PROVES
+
+sequent: PROVES RPAREN
+##
+## Ends in an error in state: 18.
+##
+## sequent -> prop_set PROVES . prop_set EOF [ # ]
+##
+## The known suffix of the stack is as follows:
+## prop_set PROVES
+##
+
+After PROVES, propositions are expected
+
+sequent: PROVES BOTTOM PROVES
+##
+## Ends in an error in state: 19.
+##
+## sequent -> prop_set PROVES prop_set . EOF [ # ]
+##
+## The known suffix of the stack is as follows:
+## prop_set PROVES prop_set
+##
+## WARNING: This example involves spurious reductions.
+## This implies that, although the LR(1) items shown above provide an
+## accurate view of the past (what has been recognized so far), they
+## may provide an INCOMPLETE view of the future (what was expected next).
+## In state 21, spurious reduction of production separated_nonempty_list(COMMA,prop) -> prop
+## In state 16, spurious reduction of production loption(separated_nonempty_list(COMMA,prop)) -> separated_nonempty_list(COMMA,prop)
+## In state 24, spurious reduction of production prop_set -> loption(separated_nonempty_list(COMMA,prop))
+##
+
+Just one PROVES is expected
+
+sequent: BOTTOM RPAREN
+##
+## Ends in an error in state: 21.
+##
+## prop -> prop . AND prop [ PROVES OR IMP EOF COMMA AND ]
+## prop -> prop . OR prop [ PROVES OR IMP EOF COMMA AND ]
+## prop -> prop . IMP prop [ PROVES OR IMP EOF COMMA AND ]
+## separated_nonempty_list(COMMA,prop) -> prop . [ PROVES EOF ]
+## separated_nonempty_list(COMMA,prop) -> prop . COMMA separated_nonempty_list(COMMA,prop) [ PROVES EOF ]
+##
+## The known suffix of the stack is as follows:
+## prop
+##
+
+After a proposition, an operator, PROVES, COMMA, or closing parenthesis are expected
+
+sequent: BOTTOM COMMA RPAREN
+##
+## Ends in an error in state: 22.
+##
+## separated_nonempty_list(COMMA,prop) -> prop COMMA . separated_nonempty_list(COMMA,prop) [ PROVES EOF ]
+##
+## The known suffix of the stack is as follows:
+## prop COMMA
+##
+
+After COMMA, a proposition is expected
+

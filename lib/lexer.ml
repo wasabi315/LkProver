@@ -38,6 +38,9 @@ let rec read lexbuf =
   | any ->
     let offset = lexeme_start lexbuf in
     let tok = Utf8.lexeme lexbuf in
-    raise @@ Error (sprintf "Unexpected character %S at offset %d" tok offset)
-  | _ -> failwith "impossible"
+    let msg =
+      sprintf "Lexing error at offset %d: Unexpected character '%s'" offset tok
+    in
+    raise (Error msg)
+  | _ -> failwith "Impossible"
 ;;
