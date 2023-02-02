@@ -3,7 +3,8 @@ let parse lexbuf =
   let parser =
     MenhirLib.Convert.Simplified.traditional2revised Parser.sequent
   in
-  parser lexer
+  try Ok (parser lexer) with
+  | Parser.Error -> Error "Syntax error"
 ;;
 
 let from_channel ch =

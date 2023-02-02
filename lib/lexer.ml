@@ -1,7 +1,5 @@
 open Parser
 
-exception UnknownToken of string
-
 let space = [%sedlex.regexp? Plus white_space]
 let alpha = [%sedlex.regexp? 'A' .. 'Z' | 'a' .. 'z']
 let digit = [%sedlex.regexp? '0' .. '9']
@@ -35,7 +33,5 @@ let rec read lexbuf =
     let s = Sedlexing.Utf8.lexeme lexbuf in
     SYM s
   | eof -> EOF
-  | _ ->
-    let s = Sedlexing.Utf8.lexeme lexbuf in
-    raise (UnknownToken s)
+  | _ -> raise Error
 ;;
