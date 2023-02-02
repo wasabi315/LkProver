@@ -12,30 +12,31 @@ module Op_prec = struct
     | And
     | Not (* highest precedence *)
   [@@deriving ord]
+
+  let ( > ) p1 p2 = compare p1 p2 > 0
 end
 
 let pp_prop =
-  let pp_with_paren ppf prec1 prec2 pp =
-    let show_paren = Op_prec.compare prec1 prec2 > 0 in
-    if show_paren then fprintf ppf "(";
+  let paren_if pred pp ppf =
+    if pred then fprintf ppf "(";
     fprintf ppf "%t" pp;
-    if show_paren then fprintf ppf ")"
+    if pred then fprintf ppf ")"
   in
-  let rec loop prec ppf = function
-    | Prop.Bottom -> fprintf ppf "\\bot"
-    | Sym s -> fprintf ppf "%s" s
-    | Not p -> fprintf ppf "\\lnot %a" (loop Op_prec.Not) p
+  let rec loop prec = function
+    | Prop.Bottom -> dprintf "\\bot"
+    | Sym s -> dprintf "%s" s
+    | Not p -> dprintf "\\lnot %t" (loop Op_prec.Not p)
     | And (p1, p2) ->
-      dprintf "%a \\land %a" (loop And) p1 (loop And) p2
-      |> pp_with_paren ppf prec And
+      dprintf "%t \\land %t" (loop And p1) (loop And p2)
+      |> paren_if Op_prec.(prec > And)
     | Or (p1, p2) ->
-      dprintf "%a \\lor %a" (loop Or) p1 (loop Or) p2
-      |> pp_with_paren ppf prec Or
+      dprintf "%t \\lor %t" (loop Or p1) (loop Or p2)
+      |> paren_if Op_prec.(prec > Or)
     | Imp (p1, p2) ->
-      dprintf "%a \\rightarrow %a" (loop Imp_r) p1 (loop Imp) p2
-      |> pp_with_paren ppf prec Imp
+      dprintf "%t \\rightarrow %t" (loop Imp_r p1) (loop Imp p2)
+      |> paren_if Op_prec.(prec > Imp)
   in
-  loop Bottom
+  Fun.flip (loop Bottom)
 ;;
 
 let pp_prop_set ppf props =
