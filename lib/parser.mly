@@ -18,9 +18,9 @@ paren(rule):
   | ret = delimited(LPAREN, rule, RPAREN) { ret }
 
 sequent:
-  | p1 = Prop_set PROVES p2 = Prop_set EOF { (p1, p2) }
+  | p1 = prop_set PROVES p2 = prop_set EOF { (p1, p2) }
 
-Prop_set:
+prop_set:
   | ps = separated_list(COMMA, prop) { Prop_set.of_list ps }
 
 prop:
