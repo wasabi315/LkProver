@@ -1,10 +1,19 @@
+open Format
+open Lk
+module I = Parser.MenhirInterpreter
+
 let parse lexbuf =
-  let lexer = Sedlexing.with_tokenizer Lexer.read lexbuf in
-  let parser =
-    MenhirLib.Convert.Simplified.traditional2revised Parser.sequent
+  let supplier = Sedlexing.with_tokenizer Lexer.read lexbuf in
+  let success = Result.ok in
+  let fail _ =
+    let offset = Sedlexing.lexeme_start lexbuf in
+    Error (sprintf "Syntax error at offset %d" offset)
   in
-  try Ok (parser lexer) with
-  | Parser.Error -> Error "Syntax error"
+  let init =
+    Parser.Incremental.sequent (fst @@ Sedlexing.lexing_positions lexbuf)
+  in
+  try I.loop_handle success fail supplier init with
+  | Lexer.Error msg -> Error msg
 ;;
 
 let from_channel ch =

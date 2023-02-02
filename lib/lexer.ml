@@ -1,4 +1,7 @@
+open Format
 open Parser
+
+exception Error of string
 
 let space = [%sedlex.regexp? Plus white_space]
 let alpha = [%sedlex.regexp? 'A' .. 'Z' | 'a' .. 'z']
@@ -6,6 +9,7 @@ let digit = [%sedlex.regexp? '0' .. '9']
 let sym = [%sedlex.regexp? alpha, Star (alpha | digit | '_')]
 
 let rec read lexbuf =
+  let open Sedlexing in
   match%sedlex lexbuf with
   | space -> read lexbuf
   | ',' -> COMMA
@@ -29,9 +33,11 @@ let rec read lexbuf =
   | 0x22a2 -> PROVES (* ⊢ *)
   | "=>" -> PROVES
   | "|-" -> PROVES
-  | sym ->
-    let s = Sedlexing.Utf8.lexeme lexbuf in
-    SYM s
+  | sym -> SYM (Utf8.lexeme lexbuf)
   | eof -> EOF
-  | _ -> raise Error
+  | any ->
+    let offset = lexeme_start lexbuf in
+    let tok = Utf8.lexeme lexbuf in
+    raise @@ Error (sprintf "Unexpected character %S at offset %d" tok offset)
+  | _ -> failwith "impossible"
 ;;
